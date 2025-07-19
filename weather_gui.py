@@ -13,6 +13,17 @@ st.set_page_config(
     layout="wide"
 )
 
+# Hide Streamlit's hamburger menu, deploy button and footer
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+.stDeployButton {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # City coordinates dictionary
 CITIES = {
     "Beijing": Point(39.9042, 116.4074),
