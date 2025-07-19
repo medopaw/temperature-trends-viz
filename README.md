@@ -10,6 +10,14 @@ A web-based tool for visualizing and analyzing temperature trends for cities aro
 - **Interactive Visualizations**: Built with Streamlit for easy interaction
 - **Configurable City Database**: Easily add or modify cities via JSON configuration
 
+## Screenshots
+
+### Single City Analysis Mode
+![Single City Mode](screenshots/single-city-mode.png)
+
+### Multi-City Comparison Mode
+![Compare Cities Mode](screenshots/compare-cities-mode.png)
+
 ## Quick Start
 
 ### Option 1: Docker (Fastest - No Installation Required)
