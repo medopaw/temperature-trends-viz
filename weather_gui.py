@@ -5,10 +5,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.font_manager as fm
+import json
+import os
 
 # Configure page
 st.set_page_config(
-    page_title="Weather Data Visualization",
+    page_title="Temperature Trends Viz",
     page_icon="🌡️",
     layout="wide"
 )
@@ -24,41 +26,33 @@ footer {visibility: hidden;}
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# City coordinates dictionary
-CITIES = {
-    "Beijing": Point(39.9042, 116.4074),
-    "Taiyuan": Point(37.8706, 112.5489),
-    "Chengdu": Point(30.5728, 104.0668),
-    "Chongqing": Point(29.5630, 106.5516),
-    "Hangzhou": Point(30.2741, 120.1551),
-    "Guangzhou": Point(23.1291, 113.2644),
-    "Shenzhen": Point(22.5431, 114.0579),
-    "Xi'an": Point(34.3416, 108.9398),
-    "Tianjin": Point(39.1422, 117.1767),
-    "Haikou": Point(20.0458, 110.3417),
-    "Sanya": Point(18.2529, 109.5119),
-    "Shanghai": Point(31.2304, 121.4737),
-    "Qingdao": Point(36.0671, 120.3826),
-    "Suzhou": Point(31.2989, 120.5853),
-    "Xiamen": Point(24.4798, 118.0894),
-    "Kunming": Point(25.0389, 102.7183),
-    "Shenyang": Point(41.8057, 123.4315),
-    "Changchun": Point(43.8913, 125.3313),
-    "Harbin": Point(45.7000, 126.6000),
-    "Lanzhou": Point(36.0611, 103.8343),
-    "Urumqi": Point(43.8000, 87.6000),
-    "Nanning": Point(22.8167, 108.3167),
-    "Lhasa": Point(29.6500, 91.1000),
-    "Hong Kong": Point(22.3000, 114.2000),
-    "Macau": Point(22.2000, 113.5000),
-    "Zhengzhou": Point(34.7466, 113.6253),
-    "Jinan": Point(36.6512, 117.1201),
-    "Shijiazhuang": Point(38.0428, 114.5149),
-    "Yinchuan": Point(38.4872, 106.2309),
-    "Xining": Point(36.6171, 101.7782),
-    "Guiyang": Point(26.5783, 106.7135),
-    "Changsha": Point(28.2282, 112.9388)
-}
+def load_cities_data():
+    """Load cities data from JSON file"""
+    try:
+        # Get the directory of the current script
+        script_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
+        cities_file = os.path.join(script_dir, 'cities.json')
+        with open(cities_file, 'r', encoding='utf-8') as f:
+            cities_data = json.load(f)
+
+        # Convert to Point objects for meteostat
+        cities = {}
+        for city_name, city_info in cities_data.items():
+            cities[city_name] = Point(city_info['lat'], city_info['lon'])
+
+        return cities
+    except FileNotFoundError:
+        st.error("Cities data file (cities.json) not found!")
+        return {}
+    except json.JSONDecodeError:
+        st.error("Error reading cities data file!")
+        return {}
+    except Exception as e:
+        st.error(f"Error loading cities data: {str(e)}")
+        return {}
+
+# Load cities data
+CITIES = load_cities_data()
 
 def get_weather_data(city_point, start_year, end_year):
     """Get weather data for a specific city and time range"""
@@ -173,8 +167,8 @@ def create_comparison_plot(selected_cities, start_year, end_year):
     return fig
 
 # Streamlit UI
-st.title("🌡️ Weather Data Visualization")
-st.markdown("Explore temperature trends for major Chinese cities")
+st.title("🌡️ Temperature Trends Viz")
+st.markdown("Explore temperature trends for cities around the world")
 
 # Sidebar for controls
 st.sidebar.header("Settings")
@@ -310,11 +304,15 @@ if st.sidebar.button("Generate Plot", type="primary"):
 st.sidebar.markdown("---")
 st.sidebar.markdown("### About")
 st.sidebar.markdown("""
-This app visualizes temperature trends for major Chinese cities using data from Meteostat.
+This app visualizes temperature trends for cities using data from Meteostat.
 
 **Features:**
 - Single city detailed view with monthly and annual trends
 - Multi-city comparison view
 - Customizable time range
 - Real-time data generation
+- Easily configurable city database
+
+**To add more cities:**
+Edit the `cities.json` file with new city coordinates.
 """)
