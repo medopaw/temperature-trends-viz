@@ -1,12 +1,13 @@
-import streamlit as st
-from meteostat import Monthly, Point
-from datetime import datetime
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import matplotlib.font_manager as fm
 import json
 import os
+from datetime import datetime
+
+import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import streamlit as st
+from meteostat import Monthly, Point
 
 # Configure page
 st.set_page_config(
@@ -29,11 +30,26 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 def load_cities_data():
     """Load cities data from JSON file"""
     try:
-        # Get the directory of the current script
-        script_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
+        # Get the directory of the current script, with fallback for Docker environments
+        try:
+            if '__file__' in globals():
+                script_dir = os.path.dirname(os.path.abspath(__file__))
+            else:
+                script_dir = os.getcwd()
+        except (OSError, PermissionError):
+            # Fallback to current working directory if path resolution fails
+            script_dir = os.getcwd()
+
         cities_file = os.path.join(script_dir, 'cities.json')
-        with open(cities_file, 'r', encoding='utf-8') as f:
-            cities_data = json.load(f)
+
+        # Try to open the file, with fallback to just 'cities.json' if path fails
+        try:
+            with open(cities_file, 'r', encoding='utf-8') as f:
+                cities_data = json.load(f)
+        except (FileNotFoundError, PermissionError):
+            # Fallback: try to open cities.json directly
+            with open('cities.json', 'r', encoding='utf-8') as f:
+                cities_data = json.load(f)
 
         # Convert to Point objects for meteostat
         cities = {}
@@ -107,9 +123,10 @@ def create_temperature_plot(city_name, df, annual_avg, start_year, end_year):
 
 def create_comparison_plot(selected_cities, start_year, end_year):
     """Create comparison plot for multiple cities"""
+    import time
+
     import matplotlib.cm as cm
     import numpy as np
-    import time
 
     # No need to limit here as UI already limits to 10 cities
 

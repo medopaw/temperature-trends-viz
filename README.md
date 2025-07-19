@@ -29,7 +29,7 @@ pip install uv
 
 1. Clone this repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/medopaw/temperature-trends-viz.git
 cd temperature-trends-viz
 ```
 
@@ -44,14 +44,34 @@ uv sync --extra dev
 
 ## Usage
 
-### Method 1: Using uv run (Recommended)
+### Method 1: Using Docker (Recommended for Production)
+
+The easiest way to run the application is using Docker:
+
+```bash
+# Run directly from Docker Hub
+docker run -p 8501:8501 --name temperature-trends-viz medopaw/temperature-trends-viz:latest
+```
+
+Or using docker-compose:
+
+```bash
+# Clone the repository first
+git clone <repository-url>
+cd temperature-trends-viz
+
+# Run with docker-compose
+docker-compose up -d
+```
+
+### Method 2: Using uv run (Recommended for Development)
 
 ```bash
 # Run the application directly with uv
 uv run streamlit run weather_gui.py
 ```
 
-### Method 2: Using virtual environment
+### Method 3: Using virtual environment
 
 ```bash
 # Activate the virtual environment created by uv
@@ -63,7 +83,7 @@ source .venv/bin/activate  # On Linux/macOS
 streamlit run weather_gui.py
 ```
 
-### Method 3: Using the convenience script
+### Method 4: Using the convenience script
 
 ```bash
 # Make the script executable (Linux/macOS only)
@@ -101,15 +121,89 @@ To add new cities to the database:
 
 3. Save the file and restart the application
 
+## Docker Deployment
+
+### Quick Start with Docker
+
+The application is available as a Docker image on Docker Hub. You can run it with a single command:
+
+```bash
+docker run -p 8501:8501 --name temperature-trends-viz medopaw/temperature-trends-viz:latest
+```
+
+Then open your browser and go to `http://localhost:8501`
+
+### Using Docker Compose
+
+For a more robust deployment, use docker-compose:
+
+```bash
+# Clone the repository
+git clone https://github.com/medopaw/temperature-trends-viz.git
+cd temperature-trends-viz
+
+# Start the application
+docker-compose up -d
+
+# Stop the application
+docker-compose down
+```
+
+### Building Your Own Image
+
+If you want to build the Docker image yourself:
+
+```bash
+# Build the image
+docker build -t temperature-trends-viz .
+
+# Run the container
+docker run -p 8501:8501 --name temperature-trends-viz temperature-trends-viz
+```
+
+### Deployment Scripts
+
+The repository includes deployment scripts for easy publishing:
+
+```bash
+# Interactive build and push to Docker Hub
+./docker-build-and-push.sh
+
+# Quick deploy (requires Docker Hub login)
+./docker-quick-deploy.sh [version]
+```
+
 ## Data Source
 
 This application uses the [Meteostat](https://meteostat.net/) library to fetch historical weather data. Meteostat provides access to weather data from meteorological stations worldwide.
 
 ## File Structure
 
-- `weather_gui.py` - Main application file
+### Core Application
+- `weather_gui.py` - Main Streamlit application
 - `cities.json` - City coordinates database
-- `README.md` - This documentation
+- `pyproject.toml` - Project configuration and dependencies
+
+### Docker Configuration
+- `Dockerfile` - Multi-stage Docker image configuration
+- `docker-compose.yml` - Container orchestration configuration
+- `.dockerignore` - Docker build context exclusions
+
+### Deployment Scripts
+- `docker-build-and-push.sh` - Interactive deployment script
+- `docker-quick-deploy.sh` - Quick deployment script
+
+### Development Tools
+- `run.sh` / `run.bat` - Local development scripts
+- `test_setup.py` - Setup verification script
+- `Makefile` - Build automation
+
+### Documentation
+- `README.md` - Main project documentation
+- `DOCKER.md` - Detailed Docker usage guide
+- `DEPLOYMENT.md` - Complete deployment instructions
+- `SETUP.md` - Local development setup guide
+- `CONFIGURATION.md` - Configuration options
 
 ## Development
 
@@ -175,12 +269,21 @@ Feel free to contribute by:
 
 For the impatient, here's the fastest way to get started:
 
+### Option 1: Docker (Fastest)
+
+```bash
+# Run directly from Docker Hub - no installation needed!
+docker run -p 8501:8501 --name temperature-trends-viz medopaw/temperature-trends-viz:latest
+```
+
+### Option 2: Local Development
+
 ```bash
 # Install uv if you haven't already
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone and run
-git clone <repository-url>
+git clone https://github.com/medopaw/temperature-trends-viz.git
 cd temperature-trends-viz
 uv run streamlit run weather_gui.py
 ```
