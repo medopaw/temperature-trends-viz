@@ -96,16 +96,23 @@ def get_weather_data(city_point, start_year, end_year):
 def create_temperature_plot(city_name, df, annual_avg, start_year, end_year):
     """Create temperature plot for a specific city"""
     fig, ax = plt.subplots(figsize=(14, 8))
-    
+
     # Set style
     sns.set_style("whitegrid")
-    
+
+    # Month names mapping
+    month_names = {
+        1: 'January', 2: 'February', 3: 'March', 4: 'April',
+        5: 'May', 6: 'June', 7: 'July', 8: 'August',
+        9: 'September', 10: 'October', 11: 'November', 12: 'December'
+    }
+
     # Plot monthly trends
     for m in range(1, 13):
         month_data = df[df['Month'] == m]
         if not month_data.empty:
             ax.plot(month_data['Year'], month_data['tavg'],
-                   label=f'Month {m}', alpha=0.7, linewidth=1)
+                   label=month_names[m], alpha=0.7, linewidth=1)
     
     # Plot annual average trend (bold line)
     if not annual_avg.empty:
